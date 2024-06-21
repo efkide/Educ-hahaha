@@ -1,140 +1,182 @@
-const { exec } = require("child_process");
-const chalk = require("chalk");
-const check = require("get-latest-version");
-const fs = require("fs");
-const semver = require("semver");
 
-let configJson;
-let packageJson;
-const sign = "(›^-^)›";
-const fbstate = "appstate.json";
-
-try {
-  configJson = require("./config.json");
-} catch (error) {
-  console.error("Error loading config.json:", error);
-  process.exit(1); // Exit the script with an error code
-}
-
-const delayedLog = async (message) => {
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-  for (const char of message) {
-    process.stdout.write(char);
-    await delay(50);
-  }
-
-  console.log();
-};
-
-const showMessage = async () => {
-  const message =
-    chalk.yellow(" ") +
-    `The "removeSt" property is set true in the config.json. Therefore, the Appstate was cleared effortlessly! You can now place a new one in the same directory.`;
-
-  await delayedLog(message);
-};
-
-if (configJson.removeSt) {
-  fs.writeFileSync(fbstate, sign, { encoding: "utf8", flag: "w" });
-  showMessage();
-  configJson.removeSt = false;
-  fs.writeFileSync(
-    "./config.json",
-    JSON.stringify(configJson, null, 2),
-    "utf8",
-  );
-  setTimeout(() => {
-    process.exit(0);
-  }, 10000);
-  return;
-}
-
-// # Please note that sometimes this function is the reason the bot will auto-restart, even if your custom.js auto-restart is set to false. This is because the port switches automatically if it is unable to connect to the current port. ↓↓↓↓↓↓
-
-const excluded = configJson.UPDATE.EXCLUDED || [];
-
-try {
-  packageJson = require("./package.json");
-} catch (error) {
-  console.error("Error loading package.json:", error);
-  return;
-}
-
-function nv(version) {
-  return version.replace(/^\^/, "");
-}
-
-async function updatePackage(dependency, currentVersion, latestVersion) {
-  if (!excluded.includes(dependency)) {
-    const ncv = nv(currentVersion);
-
-    if (semver.neq(ncv, latestVersion)) {
-      console.log(
-        chalk.bgYellow.bold(` UPDATE `),
-        `There is a newer version ${chalk.yellow(`(^${latestVersion})`)} available for ${chalk.yellow(dependency)}. Updating to the latest version...`,
-      );
-
-      packageJson.dependencies[dependency] = `^${latestVersion}`;
-
-      fs.writeFileSync("./package.json", JSON.stringify(packageJson, null, 2));
-
-      console.log(
-        chalk.green.bold(`UPDATED`),
-        `${chalk.yellow(dependency)} updated to ${chalk.yellow(`^${latestVersion}`)}`,
-      );
-
-      exec(`npm install ${dependency}@latest`, (error, stdout, stderr) => {
-        if (error) {
-          console.error("Error executing npm install command:", error);
-          return;
-        }
-        console.log("npm install output:", stdout);
-      });
-    }
-  }
-}
-
-async function checkAndUpdate() {
-  if (configJson.UPDATE && configJson.UPDATE.Package) {
-    try {
-      for (const [dependency, currentVersion] of Object.entries(
-        packageJson.dependencies,
-      )) {
-        const latestVersion = await check(dependency);
-        await updatePackage(dependency, currentVersion, latestVersion);
-      }
-    } catch (error) {
-      console.error("Error checking and updating dependencies:", error);
-    }
-  } else {
-    console.log(
-      chalk.yellow(""),
-      "Update for packages is not enabled in config.json",
-    );
-  }
-}
-
-// Do not remove anything if you don't know what you're doing! -Yan
-
-setTimeout(() => {
-  checkAndUpdate();
-}, 20000);
-
-const path = require("path");
-const express = require("express");
+//* Don't change this code if not destroy your files and don't steal it the code (by jonell Magallanes Project CC))
+const express = require('express');
+const fs = require('fs');
+const { spawn } = require("child_process");
+const chalk = require('chalk');
+const path = require('path');
+const axios = require("axios");
 const app = express();
-global.loading = require("./utils/log.js");
+const PingMonitor = require('ping-monitor');
+const pingOptions = {
+  website: `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`,
+  title: 'EDUCATIONAL BOT 4.0V',
+  interval: 1 // minutes
+};
 
-app.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname, "/includes/cover/index.html"));
-});
-app.listen(2024, () => {
-  global.loading.log(
-    `Bot is running on port: 2024`,
-    "SYSTEM",
-  );
+// Create a new Ping Monitor instance
+const monitor = new PingMonitor(pingOptions);
+
+monitor.on('up', (res) => {
+  const pingTime = res.ping ? `${res.ping}ms` : '';
+  console.log(chalk.green.bold(`${res.website} is UP. ${pingTime}`));
 });
 
-// __@YanMaglinte was Here__ //
-// ----------------------------//
+monitor.on('down', (res) => {
+  console.log(chalk.red.bold(`${res.website} is DOWN. Status Message: ${res.statusMessage}`));
+});
+
+monitor.on('error', (error) => {
+  console.log(chalk.red(`An error has occurred: ${error}`));
+});
+
+setInterval(() => {
+  if (monitor.isRunning()) {
+    console.log(chalk.green.bold('Uptime notification: The website is running smoothly.'));
+  } else {
+    console.log(chalk.red.bold('Uptime notification: The website is currently down.'));
+  }
+}, 3600000); // 60 minutes * 60 seconds * 1000 milliseconds
+
+monitor.on('stop', (website) => {
+  console.log(`${website} monitor has stopped.`);
+});
+
+monitor.start();
+
+function ping(targetUrl) {
+  const startPingTime = Date.now();
+
+  axios.get(targetUrl)
+    .then(() => {
+      const latency = Date.now() - startPingTime;
+      console.log(`Ping to ${targetUrl}: ${latency}ms`);
+    })
+    .catch((error) => {
+      console.error(`Error pinging ${targetUrl}: ${error.message}`);
+    });
+}
+
+
+setInterval(() => {
+  ping(`https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`);
+}, 30000); 
+const config = require('./config.json'); 
+
+const commandsPath = './modules/commands'; 
+const eventsPath = './modules/events'; 
+
+const getFilesCount = (dirPath) => {
+  try {
+    return fs.readdirSync(dirPath).length;
+  } catch (e) {
+    return 0;
+  }
+};
+
+
+let startPingTime = Date.now();
+let botStartTime = Date.now(); 
+
+async function getBotInformation() {
+  return {
+    owner: {
+      name: config.BOTOWNER,
+      uid: config.ADMINUID,
+    },
+    bot: {
+      name: config.BOTNAME,
+      uid: config.ADMINUID,
+      fmd: config.FCA,
+      repl: config.REPL,
+      lang: config.language,
+      ping: Date.now() - startPingTime,
+      },
+    fca: {
+      module: config.FCA,
+    }
+  };
+}
+
+function sendLiveData(socket) {
+  setInterval(() => {
+    const uptime = Date.now() - botStartTime;
+
+    socket.emit('real-time-data', { uptime });
+  }, 1000); 
+}
+
+app.get('/dashboard', async (req, res) => {
+  const commandsCount = getFilesCount(commandsPath);
+  const eventsCount = getFilesCount(eventsPath);
+  const uptime = Date.now() - botStartTime;
+  const botInformation = await getBotInformation();
+
+  res.json({
+    botPing:
+     botInformation.bot.ping,
+    botLang:
+  botInformation.bot.lang,
+    botRepl:
+     botInformation.bot.repl,
+    botFmd:
+    botInformation.bot.fmd,
+    botName: botInformation.bot.name,
+    botUid: botInformation.bot.uid,
+    ownerName: botInformation.owner.name,
+    ownerUid: botInformation.owner.uid,
+    prefix: config.PREFIX,
+    commandsCount: commandsCount,
+    eventsCount: eventsCount,
+    uptime: uptime
+  });
+});
+
+
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'harold.html')));
+
+
+const http = require('http');
+const { Server } = require("socket.io");
+const httpServer = http.createServer(app);
+const io = new Server(httpServer);
+
+io.on('connection', (socket) => {
+  console.log('New client connected');
+  sendLiveData(socket);
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+});
+
+function startBot() {
+  const child = spawn("node", ["--trace-warnings", "--async-stack-traces", "main.js"], {
+      cwd: __dirname,
+      stdio: "inherit",
+      shell: true
+  });
+
+  child.on("close", (codeExit) => {
+    console.log(`Bot process exited with code: ${codeExit}`);
+    if (codeExit !== 0) {
+       setTimeout(startBot, 3000); 
+    }
+  });
+
+  child.on("error", (error) => {
+    console.error(`An error occurred starting the bot: ${error}`);
+  });
+}
+
+startBot(); 
+
+const port = process.env.PORT || 5000;
+httpServer.listen(port, () => {
+  console.log(`Server with real-time updates running on http://localhost:${port}`);
+});
+
+module.exports = app;
+
+
+//Modified by Jonell Magallanes 

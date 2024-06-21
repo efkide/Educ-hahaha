@@ -23,7 +23,7 @@ global.moduleData = new Array();
 global.language = new Object();
 global.account = new Object();
 
-function startProject() {
+/*function startProject() {
     try {
         const child = spawn("node", ["--trace-warnings", "--async-stack-traces", "index.js"], {
             cwd: __dirname,
@@ -46,7 +46,7 @@ function startProject() {
 } 
 
 startProject();
-
+*/
 global.client = new Object({
   commands: new Map(),
   events: new Map(),
