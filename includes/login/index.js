@@ -2,8 +2,6 @@
 
 const utils = require("./utils");
 const log = require("npmlog");
-const { getThemeColors } = require('../../utils/log');
-const { co, cra } = getThemeColors();
 
 const checkVerified = null;
 
@@ -96,8 +94,7 @@ function buildAPI(globalOptions, html, jar) {
 
   const userID = maybeCookie[0].cookieString().split("=")[1].toString();
   const i_userID = objCookie.i_user || null;
-  //log.info("login", `Logged in as ${userID}`);
-  console.log(co("[ DATABASE ]"), (cra("[ CONNECT ]")), `Logged in as ${userID}`);
+  log.info("login", `Logged in as ${userID}`);
 
   try {
     clearInterval(checkVerified);
@@ -116,25 +113,22 @@ function buildAPI(globalOptions, html, jar) {
     irisSeqID = oldFBMQTTMatch[1];
     mqttEndpoint = oldFBMQTTMatch[2];
     region = new URL(mqttEndpoint).searchParams.get("region").toUpperCase();
-    //log.info("login", `Got this account's message region: ${region}`);
-    console.log(co("[ DATABASE ]"), (cra("[ CONNECT ]")), `Account's message region: ${region}`);
+    log.info("login", `Got this account's message region: ${region}`);
   } else {
     const newFBMQTTMatch = html.match(/{"app_id":"219994525426954","endpoint":"(.+?)","iris_seq_id":"(.+?)"}/);
     if (newFBMQTTMatch) {
       irisSeqID = newFBMQTTMatch[2];
       mqttEndpoint = newFBMQTTMatch[1].replace(/\\\//g, "/");
       region = new URL(mqttEndpoint).searchParams.get("region").toUpperCase();
-      //log.info("login", `Got this account's message region: ${region}`);
-      console.log(co("[ DATABASE ]"), (cra("[ CONNECT ]")), `Account's message region: ${region}`);
+      log.info("login", `Got this account's message region: ${region}`);
     } else {
       const legacyFBMQTTMatch = html.match(/(\["MqttWebConfig",\[\],{fbid:")(.+?)(",appID:219994525426954,endpoint:")(.+?)(",pollingEndpoint:")(.+?)(3790])/);
       if (legacyFBMQTTMatch) {
         mqttEndpoint = legacyFBMQTTMatch[4];
         region = new URL(mqttEndpoint).searchParams.get("region").toUpperCase();
-        console.log(co("[ DATABASE ]"), (cra("[ CONNECT ]")), `Your account has been disconnected. Please check your Facebook account to see if anything has happened.`);
-        //log.warn("login", `Cannot get sequence ID with new RegExp. Fallback to old RegExp (without seqID)...`);
-        //log.info("login", `Got this account's message region: ${region}`);
-        //log.info("login", `[Unused] Polling endpoint: ${legacyFBMQTTMatch[6]}`);
+        log.warn("login", `Cannot get sequence ID with new RegExp. Fallback to old RegExp (without seqID)...`);
+        log.info("login", `Got this account's message region: ${region}`);
+        log.info("login", `[Unused] Polling endpoint: ${legacyFBMQTTMatch[6]}`);
       } else {
         log.warn("login", "Cannot get MQTT region & sequence ID.");
         noMqttData = html;
@@ -341,8 +335,7 @@ function loginHelper(appState, email, password, globalOptions, callback, prCallb
   // At the end we call the callback or catch an exception
   mainPromise
     .then(function () {
-      console.log(co("[ DATABASE ]"), (cra("[ CONNECT ]")), 'Done logging in.');
-      //log.info("login", 'Done logging in.');
+      log.info("login", 'Done logging in.');
       return callback(null, api);
     })
     .catch(function (e) {

@@ -1,9 +1,10 @@
 "use strict";
 
-const utils = require("../utils");
-const log = require("npmlog");
+var utils = require("../utils");
+var log = require("npmlog");
+var bluebird = require("bluebird");
 
-const allowedProperties = {
+var allowedProperties = {
 	attachment: true,
 	url: true,
 	sticker: true,
@@ -11,15 +12,15 @@ const allowedProperties = {
 	emojiSize: true,
 	body: true,
 	mentions: true,
-	location: true
+	location: true,
 };
 
 module.exports = function (defaultFuncs, api, ctx) {
 	function uploadAttachment(attachments, callback) {
-		const uploads = [];
+		var uploads = [];
 
 		// create an array of promises
-		for (let i = 0; i < attachments.length; i++) {
+		for (var i = 0; i < attachments.length; i++) {
 			if (!utils.isReadableStream(attachments[i])) {
 				throw {
 					error:
@@ -29,7 +30,7 @@ module.exports = function (defaultFuncs, api, ctx) {
 				};
 			}
 
-			const form = {
+			var form = {
 				upload_1024: attachments[i],
 				voice_clip: "true"
 			};
@@ -56,7 +57,7 @@ module.exports = function (defaultFuncs, api, ctx) {
 		}
 
 		// resolve all promises
-		Promise
+		bluebird
 			.all(uploads)
 			.then(function (resData) {
 				callback(null, resData);
@@ -68,7 +69,7 @@ module.exports = function (defaultFuncs, api, ctx) {
 	}
 
 	function getUrl(url, callback) {
-		const form = {
+		var form = {
 			image_height: 960,
 			image_width: 960,
 			uri: url
@@ -105,10 +106,10 @@ module.exports = function (defaultFuncs, api, ctx) {
 		// 2. User is sending a message to a specific user.
 		// 3. No additional form params and the message goes to an existing group chat.
 		if (utils.getType(threadID) === "Array") {
-			for (let i = 0; i < threadID.length; i++) {
+			for (var i = 0; i < threadID.length; i++) {
 				form["specific_to_list[" + i + "]"] = "fbid:" + threadID[i];
 			}
-			form["specific_to_list[" + threadID.length + "]"] = "fbid:" + (ctx.i_userID || ctx.userID);
+			form["specific_to_list[" + threadID.length + "]"] = "fbid:" + ctx.userID;
 			form["client_thread_id"] = "root:" + messageAndOTID;
 			log.info("sendMessage", "Sending message to multiple users: " + threadID);
 		} else {
@@ -116,7 +117,7 @@ module.exports = function (defaultFuncs, api, ctx) {
 			// is a single person chat
 			if (isSingleUser) {
 				form["specific_to_list[0]"] = "fbid:" + threadID;
-				form["specific_to_list[1]"] = "fbid:" + (ctx.i_userID || ctx.userID);
+				form["specific_to_list[1]"] = "fbid:" + ctx.userID;
 				form["other_user_fbid"] = threadID;
 			} else {
 				form["thread_fbid"] = threadID;
@@ -126,13 +127,13 @@ module.exports = function (defaultFuncs, api, ctx) {
 		if (ctx.globalOptions.pageID) {
 			form["author"] = "fbid:" + ctx.globalOptions.pageID;
 			form["specific_to_list[1]"] = "fbid:" + ctx.globalOptions.pageID;
-			form["creator_info[creatorID]"] = ctx.i_userID || ctx.userID;
+			form["creator_info[creatorID]"] = ctx.userID;
 			form["creator_info[creatorType]"] = "direct_admin";
 			form["creator_info[labelType]"] = "sent_message";
 			form["creator_info[pageID]"] = ctx.globalOptions.pageID;
 			form["request_user_id"] = ctx.globalOptions.pageID;
 			form["creator_info[profileURI]"] =
-				"https://www.facebook.com/profile.php?id=" + (ctx.i_userID || ctx.userID);
+				"https://www.facebook.com/profile.php?id=" + ctx.userID;
 		}
 
 		defaultFuncs
@@ -151,13 +152,10 @@ module.exports = function (defaultFuncs, api, ctx) {
 							threadID
 						);
 					}
-					else {
-						log.error("sendMessage", resData);
-					}
-					return callback(null, resData);
+					return callback(resData);
 				}
 
-				const messageInfo = resData.payload.actions.reduce(function (p, v) {
+				var messageInfo = resData.payload.actions.reduce(function (p, v) {
 					return (
 						{
 							threadID: v.thread_fbid,
@@ -170,7 +168,7 @@ module.exports = function (defaultFuncs, api, ctx) {
 				return callback(null, messageInfo);
 			})
 			.catch(function (err) {
-				log.error("sendMessage", err);
+				//log.error("sendMessage", err);
 				if (utils.getType(err) == "Object" && err.error === "Not logged in.") {
 					ctx.loggedIn = false;
 				}
@@ -185,12 +183,10 @@ module.exports = function (defaultFuncs, api, ctx) {
 		if (utils.getType(threadID) === "Array") {
 			sendContent(form, threadID, false, messageAndOTID, callback);
 		} else {
-			if (utils.getType(isGroup) != "Boolean") {
-				// Removed the use of api.getUserInfo() in the old version to reduce account lockout
-				sendContent(form, threadID, threadID.toString().length < 16, messageAndOTID, callback);
-			} else {
+			if (utils.getType(isGroup) != "Boolean")
+				sendContent(form, threadID, threadID.length <= 15, messageAndOTID, callback);
+			else
 				sendContent(form, threadID, !isGroup, messageAndOTID, callback);
-			}
 		}
 	}
 
@@ -273,8 +269,8 @@ module.exports = function (defaultFuncs, api, ctx) {
 				}
 
 				files.forEach(function (file) {
-					const key = Object.keys(file);
-					const type = key[0]; // image_id, file_id, etc
+					var key = Object.keys(file);
+					var type = key[0]; // image_id, file_id, etc
 					form["" + type + "s"].push(file[type]); // push the id
 				});
 				cb();
@@ -308,7 +304,9 @@ module.exports = function (defaultFuncs, api, ctx) {
 				}
 
 				const id = mention.id || 0;
-				form["profile_xmd[" + i + "][offset]"] = offset;
+				const emptyChar = '\u200E';
+				form["body"] = emptyChar + msg.body;
+				form["profile_xmd[" + i + "][offset]"] = offset + 1;
 				form["profile_xmd[" + i + "][length]"] = tag.length;
 				form["profile_xmd[" + i + "][id]"] = id;
 				form["profile_xmd[" + i + "][type]"] = "p";
@@ -331,28 +329,26 @@ module.exports = function (defaultFuncs, api, ctx) {
 			utils.getType(callback) === "String"
 		) {
 			replyToMessage = callback;
-			callback = function () { };
+			callback = undefined;
 		}
 
-		let resolveFunc = function () { };
-		let rejectFunc = function () { };
-		const returnPromise = new Promise(function (resolve, reject) {
+		var resolveFunc = function () { };
+		var rejectFunc = function () { };
+		var returnPromise = new Promise(function (resolve, reject) {
 			resolveFunc = resolve;
 			rejectFunc = reject;
 		});
 
 		if (!callback) {
-			callback = function (err, friendList) {
-				if (err) {
-					return rejectFunc(err);
-				}
-				resolveFunc(friendList);
+			callback = function (err, data) {
+				if (err) return rejectFunc(err);
+				resolveFunc(data);
 			};
 		}
 
-		const msgType = utils.getType(msg);
-		const threadIDType = utils.getType(threadID);
-		const messageIDType = utils.getType(replyToMessage);
+		var msgType = utils.getType(msg);
+		var threadIDType = utils.getType(threadID);
+		var messageIDType = utils.getType(replyToMessage);
 
 		if (msgType !== "String" && msgType !== "Object") {
 			return callback({
@@ -388,7 +384,7 @@ module.exports = function (defaultFuncs, api, ctx) {
 			msg = { body: msg };
 		}
 
-		const disallowedProperties = Object.keys(msg).filter(
+		var disallowedProperties = Object.keys(msg).filter(
 			prop => !allowedProperties[prop]
 		);
 		if (disallowedProperties.length > 0) {
@@ -397,12 +393,12 @@ module.exports = function (defaultFuncs, api, ctx) {
 			});
 		}
 
-		const messageAndOTID = utils.generateOfflineThreadingID();
+		var messageAndOTID = utils.generateOfflineThreadingID();
 
-		const form = {
+		var form = {
 			client: "mercury",
 			action_type: "ma-type:user-generated-message",
-			author: "fbid:" + (ctx.i_userID || ctx.userID),
+			author: "fbid:" + ctx.userID,
 			timestamp: Date.now(),
 			timestamp_absolute: "Today",
 			timestamp_relative: utils.generateTimestampRelative(),

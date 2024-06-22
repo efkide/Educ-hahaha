@@ -1,7 +1,7 @@
 const axios = require('axios');
 const fs = require('fs-extra');
 
-module.exports = {
+module.exports.config = {
   name: "removebg",
   hasPermission: 0,
   version: "1",
@@ -20,7 +20,7 @@ module.exports.run = async function ({ api, event, args })  {
   try {
     api.sendMessage("⏳ | Removing background from your image...", threadID, messageID);
 
-    const response = await axios.get(`https://jonellccapisprojectv2-a62001f39859.herokuapp.com/api/rbg?imageUrl=${encodeURIComponent(photoLink)}`);
+    const response = await axios.get(`https://jonellccprojectapis10.adaptable.app/api/rbg?imageUrl=${encodeURIComponent(photoLink)}`);
     const removedBgImageUrl = response.data.image_data;
 
     const imgResponse = await axios.get(removedBgImageUrl, { responseType: "stream" });

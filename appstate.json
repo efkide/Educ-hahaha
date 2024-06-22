@@ -5,8 +5,8 @@
 		"domain": "facebook.com",
 		"path": "/",
 		"hostOnly": false,
-		"creation": "2024-06-21T10:19:22.828Z",
-		"lastAccessed": "2024-06-21T10:19:28.596Z"
+		"creation": "2024-06-22T18:40:15.728Z",
+		"lastAccessed": "2024-06-22T18:40:17.963Z"
 	},
 	{
 		"key": "fr",
@@ -14,8 +14,8 @@
 		"domain": "facebook.com",
 		"path": "/",
 		"hostOnly": false,
-		"creation": "2024-06-21T10:19:22.830Z",
-		"lastAccessed": "2024-06-21T10:19:28.596Z"
+		"creation": "2024-06-22T18:40:15.729Z",
+		"lastAccessed": "2024-06-22T18:40:17.963Z"
 	},
 	{
 		"key": "datr",
@@ -23,8 +23,8 @@
 		"domain": "facebook.com",
 		"path": "/",
 		"hostOnly": false,
-		"creation": "2024-06-21T10:19:22.831Z",
-		"lastAccessed": "2024-06-21T10:19:28.596Z"
+		"creation": "2024-06-22T18:40:15.730Z",
+		"lastAccessed": "2024-06-22T18:40:17.963Z"
 	},
 	{
 		"key": "c_user",
@@ -32,8 +32,8 @@
 		"domain": "facebook.com",
 		"path": "/",
 		"hostOnly": false,
-		"creation": "2024-06-21T10:19:22.832Z",
-		"lastAccessed": "2024-06-21T10:19:28.596Z"
+		"creation": "2024-06-22T18:40:15.731Z",
+		"lastAccessed": "2024-06-22T18:40:17.963Z"
 	},
 	{
 		"key": "xs",
@@ -41,8 +41,8 @@
 		"domain": "facebook.com",
 		"path": "/",
 		"hostOnly": false,
-		"creation": "2024-06-21T10:19:22.833Z",
-		"lastAccessed": "2024-06-21T10:19:28.596Z"
+		"creation": "2024-06-22T18:40:15.732Z",
+		"lastAccessed": "2024-06-22T18:40:17.963Z"
 	},
 	{
 		"key": "m_page_voice",
@@ -50,52 +50,7 @@
 		"domain": "facebook.com",
 		"path": "/",
 		"hostOnly": false,
-		"creation": "2024-06-21T10:19:22.834Z",
-		"lastAccessed": "2024-06-21T10:19:28.596Z"
-	},
-	{
-		"key": "sb",
-		"value": "MEZ1Zpa8-ORnzPklxcQF9OkH",
-		"domain": "messenger.com",
-		"path": "/",
-		"hostOnly": false,
-		"creation": "2024-06-21T10:19:22.835Z",
-		"lastAccessed": "2024-06-21T10:19:28.597Z"
-	},
-	{
-		"key": "fr",
-		"value": "03FIlbGQqRUfqZZwl.AWWPoOsIY83mUFyFBsx0NsUi8iM.BmdUYw..AAA.0.0.BmdUY0.AWVuuF7EMmU",
-		"domain": "messenger.com",
-		"path": "/",
-		"hostOnly": false,
-		"creation": "2024-06-21T10:19:22.835Z",
-		"lastAccessed": "2024-06-21T10:19:28.597Z"
-	},
-	{
-		"key": "c_user",
-		"value": "61561253663305",
-		"domain": "messenger.com",
-		"path": "/",
-		"hostOnly": false,
-		"creation": "2024-06-21T10:19:22.836Z",
-		"lastAccessed": "2024-06-21T10:19:28.597Z"
-	},
-	{
-		"key": "xs",
-		"value": "43%3AcsI4sKMiSo1brQ%3A2%3A1718961714%3A-1%3A-1",
-		"domain": "messenger.com",
-		"path": "/",
-		"hostOnly": false,
-		"creation": "2024-06-21T10:19:22.837Z",
-		"lastAccessed": "2024-06-21T10:19:28.597Z"
-	},
-	{
-		"key": "m_page_voice",
-		"value": "61561253663305",
-		"domain": "messenger.com",
-		"path": "/",
-		"hostOnly": false,
-		"creation": "2024-06-21T10:19:22.837Z",
-		"lastAccessed": "2024-06-21T10:19:28.597Z"
+		"creation": "2024-06-22T18:40:15.733Z",
+		"lastAccessed": "2024-06-22T18:40:17.963Z"
 	}
 ]

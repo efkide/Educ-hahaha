@@ -27,11 +27,11 @@ module.exports.run = async function ({ api, event, args }) {
         }
  api.sendMessage("Please Wait.....", event.threadID, event.messageID);
         const keySearchs = keySearch.substr(0, keySearch.indexOf('-')).trim();
-        let numberSearch = parseInt(keySearch.split("-").pop().trim()) || 99;
+        let numberSearch = parseInt(keySearch.split("-").pop().trim()) || 10;
 
-        if (isNaN(numberSearch) || numberSearch < 1 || numberSearch > 99) {
+        if (isNaN(numberSearch) || numberSearch < 1 || numberSearch > 10) {
             return api.sendMessage(
-                "⛔ 𝗜𝗻𝘃𝗮𝗹𝗶𝗱 𝗡𝘂𝗺𝗯𝗲𝗿\n━━━━━━━━━━━━━━━\n\nPlease enter a valid number of images (1-99). Example: tomozaki -5",
+                "⛔ 𝗜𝗻𝘃𝗮𝗹𝗶𝗱 𝗡𝘂𝗺𝗯𝗲𝗿\n━━━━━━━━━━━━━━━\n\nPlease enter a valid number of images (1-99). Example: wallpaper -5",
                 event.threadID,
                 event.messageID
             );

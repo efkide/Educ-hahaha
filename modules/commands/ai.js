@@ -12,16 +12,34 @@ module.exports.config = {
     cooldowns: 5,
 };
 
-module.exports.run = async function ({ api, event, args }) {
-    const content = encodeURIComponent(args.join(" "));
+module.exports.handleReply = async function ({ api, event, handleReply }) {
     const { messageID, threadID } = event;
     const id = event.senderID;
 
-    const apiUrl = `https://jonellccprojectapis10.adaptable.app/api/gptconvo?ask=${content}&id=${id}`;
+    const apiUrl = `https://jonellccprojectapis10.adaptable.app/api/gptconvo?ask=${encodeURIComponent(event.body)}&id=${id}`;
 
-    if (!content) return api.sendMessage("Please provide your question.\n\nExample: ai what is the solar system?", threadID, messageID);
+    try {
+        const lad = await api.sendMessage("🔎 Searching for an answer. Please wait...", threadID, messageID);
+        const response = await axios.get(apiUrl);
+        const { response: result } = response.data;
 
-    const l = await api.sendMessage("🔎 Searching for an answer Please Wait.....", threadID, messageID);
+        const responseMessage = `𝗖𝗛𝗔𝗧𝗚𝗣𝗧\n━━━━━━━━━━━━━━━━━━\n${result}\n━━━━━━━━━━━━━━━━━━\n`;
+        api.editMessage(responseMessage, lad.messageID, threadID, messageID);
+    } catch (error) {
+        console.error(error);
+        api.sendMessage("An error occurred while processing your request.", threadID, messageID);
+    }
+};
+
+module.exports.run = async function ({ api, event, args }) {
+    const { messageID, threadID } = event;
+    const id = event.senderID;
+
+    if (!args[0]) return api.sendMessage("Please provide your question.\n\nExample: ai what is the solar system?", threadID, messageID);
+
+    const apiUrl = `https://jonellccprojectapis10.adaptable.app/api/gptconvo?ask=${encodeURIComponent(args.join(" "))}&id=${id}`;
+
+    const lad = await api.sendMessage("🔎 Searching for an answer. Please wait...", threadID, messageID);
 
     try {
         if (event.type === "message_reply" && event.messageReply.attachments && event.messageReply.attachments[0]) {
@@ -29,21 +47,30 @@ module.exports.run = async function ({ api, event, args }) {
 
             if (attachment.type === "photo") {
                 const imageURL = attachment.url;
-                const response = await axios.get(`https://haze-gemini-v-8ba147453283.herokuapp.com/gemini-vision?text=${encodeURIComponent(content)}&image_url=${encodeURIComponent(imageURL)}`);
-                const caption = response.data.response;
+
+                const geminiUrl = `https://joshweb.click/gemini?prompt=${encodeURIComponent(args.join(" "))}&url=${encodeURIComponent(imageURL)}`;
+                const response = await axios.get(geminiUrl);
+
+                const caption = response.data.gemini;
+
                 if (caption) {
-                    return api.editMessage(`𝗚𝗲𝗺𝗶𝗻𝗶 𝗩𝗶𝘀𝗶𝗼𝗻 𝗣𝗿𝗼 𝗜𝗺𝗮𝗴𝗲 𝗥𝗲𝗰𝗼𝗴𝗻𝗶𝘁𝗶𝗼𝗻 \n━━━━━━━━━━━━━━━━━━\n${caption}`, l.messageID);
+                    return api.editMessage(`𝗚𝗲𝗺𝗶𝗻𝗶 𝗩𝗶𝘀𝗶𝗼𝗻 𝗣𝗿𝗼 𝗜𝗺𝗮𝗴𝗲 𝗥𝗲𝗰𝗼𝗴𝗻𝗶𝘁𝗶𝗼𝗻 \n━━━━━━━━━━━━━━━━━━\n${caption}\n━━━━━━━━━━━━━━━━━━\n`, lad.messageID, event.threadID, event.messageID);
                 } else {
-                    return api.sendMessage("🤖 𝙵𝚊𝚒𝚕𝚎𝚍 𝚝𝚘 𝚛𝚎𝚌𝚘𝚐𝚗𝚒𝚣𝚎𝚍 𝚝𝚑𝚎 𝚒𝚖𝚊𝚐𝚎𝚜.", threadID, messageID);
+                    return api.sendMessage("🤖 Failed to recognize the image.", threadID, messageID);
                 }
             }
         }
 
         const response = await axios.get(apiUrl);
         const { response: result } = response.data;
-        const responseMessage = `𝗖𝗛𝗔𝗧𝗚𝗣𝗧\n━━━━━━━━━━━━━━━━━━\n${result}`;
 
-        api.sendMessage(responseMessage, threadID, l.messageID);
+        const responseMessage = `𝗖𝗛𝗔𝗧𝗚𝗣𝗧\n━━━━━━━━━━━━━━━━━━\n${result}\n━━━━━━━━━━━━━━━━━━`;
+        api.editMessage(responseMessage, lad.messageID, event.threadID, event.messageID);
+        global.client.handleReply.push({
+            name: this.config.name,
+            messageID: lad.messageID,
+            author: event.senderID
+        });
     } catch (error) {
         console.error(error);
         api.sendMessage("An error occurred while processing your request.", threadID, messageID);
