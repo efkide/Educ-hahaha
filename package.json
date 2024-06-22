@@ -53,6 +53,7 @@
     "npmlog": "^7.0.1",
     "pastebin-api": "^7.0.0",
     "path": "^0.12.7",
+    "ping-monitor": "^0.8.2",
     "request": "^2.88.2",
     "semver": "^7.6.2",
     "similarity": "^1.2.1",
