@@ -1,30 +1,30 @@
 [
 	{
 		"key": "sb",
-		"value": "MEZ1Zpa8-ORnzPklxcQF9OkH",
+		"value": "89J3Zguf4XKW0iPIvND2SvA9",
 		"domain": "facebook.com",
 		"path": "/",
 		"hostOnly": false,
-		"creation": "2024-06-22T18:40:15.728Z",
-		"lastAccessed": "2024-06-22T18:40:17.963Z"
+		"creation": "2024-06-23T07:47:29.291Z",
+		"lastAccessed": "2024-06-23T07:47:33.216Z"
 	},
 	{
 		"key": "fr",
-		"value": "03FIlbGQqRUfqZZwl.AWWPoOsIY83mUFyFBsx0NsUi8iM.BmdUYw..AAA.0.0.BmdUY0.AWVuuF7EMmU",
+		"value": "0k4dlUZES8WDBbn9k.AWWDOUZHbSozzNsIf6qLPL90ng8.Bmd9Lz..AAA.0.0.Bmd9L4.AWW-nV2MGL8",
 		"domain": "facebook.com",
 		"path": "/",
 		"hostOnly": false,
-		"creation": "2024-06-22T18:40:15.729Z",
-		"lastAccessed": "2024-06-22T18:40:17.963Z"
+		"creation": "2024-06-23T07:47:29.292Z",
+		"lastAccessed": "2024-06-23T07:47:33.216Z"
 	},
 	{
 		"key": "datr",
-		"value": "MEZ1ZlfUalEFgtGtKAvWXiPD",
+		"value": "89J3ZtbXM88EUgZbWaMCRabz",
 		"domain": "facebook.com",
 		"path": "/",
 		"hostOnly": false,
-		"creation": "2024-06-22T18:40:15.730Z",
-		"lastAccessed": "2024-06-22T18:40:17.963Z"
+		"creation": "2024-06-23T07:47:29.293Z",
+		"lastAccessed": "2024-06-23T07:47:33.216Z"
 	},
 	{
 		"key": "c_user",
@@ -32,25 +32,32 @@
 		"domain": "facebook.com",
 		"path": "/",
 		"hostOnly": false,
-		"creation": "2024-06-22T18:40:15.731Z",
-		"lastAccessed": "2024-06-22T18:40:17.963Z"
+		"creation": "2024-06-23T07:47:29.294Z",
+		"lastAccessed": "2024-06-23T07:47:33.216Z"
 	},
 	{
 		"key": "xs",
-		"value": "43%3AcsI4sKMiSo1brQ%3A2%3A1718961714%3A-1%3A-1",
+		"value": "27%3AwYomSIqJmY8uLw%3A2%3A1719128821%3A-1%3A-1",
 		"domain": "facebook.com",
 		"path": "/",
 		"hostOnly": false,
-		"creation": "2024-06-22T18:40:15.732Z",
-		"lastAccessed": "2024-06-22T18:40:17.963Z"
+		"creation": "2024-06-23T07:47:29.296Z",
+		"lastAccessed": "2024-06-23T07:47:33.216Z"
 	},
 	{
 		"key": "m_page_voice",
 		"value": "61561253663305",
+		"expires": "2024-09-21T07:47:29.000Z",
+		"maxAge": 7776000,
 		"domain": "facebook.com",
 		"path": "/",
+		"secure": true,
+		"httpOnly": true,
+		"extensions": [
+			"SameSite=Lax"
+		],
 		"hostOnly": false,
-		"creation": "2024-06-22T18:40:15.733Z",
-		"lastAccessed": "2024-06-22T18:40:17.963Z"
+		"creation": "2024-06-23T07:47:30.175Z",
+		"lastAccessed": "2024-06-23T07:47:33.216Z"
 	}
 ]
