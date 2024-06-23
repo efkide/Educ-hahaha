@@ -14,9 +14,14 @@ module.exports.config = {
 
 module.exports.run = async function ({ api, event, args }) {
     try {
-        const title = args[0];
-        const page = args[1] || 1;
- if (!title) return api.sendMessage("Please provide the title of your interpretation dream", event.threadID, event.messageID);
+        if (args.length === 0) {
+            return api.sendMessage("Please provide the title of your interpretation dream", event.threadID, event.messageID);
+        }
+
+        const title = args.join(' ').split('|')[0].trim();
+        const pageArg = args.join(' ').split('|')[1];
+        const page = pageArg ? pageArg.trim() : 1;
+
         const search = await api.sendMessage("🔎 | Searching your Dream Meaning......", event.threadID, event.messageID);
         const response = await axios.get(`https://jonellccprojectapis10.adaptable.app/api/df?title=${title}&page=${page}`);
 
